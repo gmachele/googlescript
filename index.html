@@ -29,12 +29,54 @@
                 <label for="rma-number">RMA Number:</label>
                 <input type="text" id="rma-number" name="rma-number" required>
             </div>
+
+            <div class="form-group">
+                <label for="date-dispatch">Date of Receival:</label>
+                <input type="date" id="date-dispatch" name="date-dispatch" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sender">Client:</label>
+                <input type="text" id="sender" name="sender" required>
+            </div>
+
+            <div class="form-group">
+                <label for="client-contact">Client Contact:</label>
+                <input type="text" id="client-contact" name="client-contact" required>
+            </div>
+
+            <div class="form-group">
+                <label for="receiver-name">Receiver Name:</label>
+                <select id="receiver-name" name="receiver-name" required>
+                    <option value="" disabled selected>Select Receiver</option>
+                    <option value="jack">Jack</option>
+                    <option value="abram">Abram</option>
+                    <option value="lovedelia">Lovedelia</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="quantity">Quantity of item(s) received:</label>
+                <input type="number" id="quantity" name="quantity" required oninput="generateInputs()">
+            </div>
+
+            <div id="input-container"></div>
+
+            <div class="form-group">
+                <label for="receiver-signature">Receiver’s Signature:</label>
+                <input type="text" id="receiver-signature" name="receiver-signature" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date-receipt">Date of Receipt:</label>
+                <input type="date" id="date-receipt" name="date-receipt" required>
+            </div>
+
             <button type="submit" class="btn">Submit</button>
         </form>
     </div>
 
     <script>
-        // Quantity input handling (Your existing generateInputs function)
         function generateInputs() {
             const quantity = document.getElementById("quantity").value;
             const container = document.getElementById("input-container");
@@ -88,15 +130,12 @@
                 descContainer.appendChild(descLabel);
                 descContainer.appendChild(descInput);
 
-                // Append elements to container
                 div.appendChild(itemTypeContainer);
                 div.appendChild(descContainer);
                 container.appendChild(div);
             }
         }
 
-
-        // Form submission handling (jQuery AJAX)
         $("#dispatch-form").submit(function (event) {
             event.preventDefault();
 
@@ -113,17 +152,17 @@
                 contentType: "application/json",
                 data: JSON.stringify(data),
                 success: function (response) {
-                    if (response && response.success) { // Check if response and response.success exist
+                    if (response && response.success) {
                         alert("Form submitted successfully! Document created. URL: " + response.message);
                         $("#dispatch-form")[0].reset();
                         $("#input-container").empty();
                     } else {
-                        alert("Error: " + (response && response.error ? response.error : "An unknown error occurred.")); // More robust error message
+                        alert("Error: " + (response && response.error ? response.error : "An unknown error occurred."));
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.error("AJAX Error:", status, error, xhr); // Log for debugging
-                    alert("AJAX Error: " + status + " - " + error + "\nDetails: " + xhr.responseText); // Display details
+                    console.error("AJAX Error:", status, error, xhr);
+                    alert("AJAX Error: " + status + " - " + error + "\nDetails: " + xhr.responseText);
                 }
             });
         });
