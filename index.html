@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dispatch Receiving Form</title>
+    <!-- Add Google Apps Script client library -->
+    <script src="https://apis.google.com/js/api.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -119,7 +121,7 @@
 
             <div class="form-group">
                 <label for="quantity">Quantity of item(s) received:</label>
-                <input type="number" id="quantity" name="quantity" required oninput="generateInputs()">
+                <input type="number" id="quantity" name="quantity" required min="1" oninput="generateInputs()">
             </div>
 
             <div id="input-container"></div>
@@ -203,15 +205,14 @@
         }
 
         // Form submission handling
-        document.getElementById("dispatch-form").addEventListener("submit", async function (event) {
+        document.getElementById("dispatch-form").addEventListener("submit", function(event) {
             event.preventDefault();
             
-            // Show loading indicator
+            // Show loading state
             const submitButton = event.target.querySelector('button[type="submit"]');
             const originalButtonText = submitButton.textContent;
             submitButton.textContent = 'Submitting...';
             submitButton.disabled = true;
-            event.target.classList.add('loading');
             
             // Get form data
             const formData = new FormData(event.target);
@@ -220,45 +221,31 @@
                 data[key] = value;
             });
             
-            try {
-                // Replace YOUR_WEBAPP_URL with the URL from your Google Apps Script deployment
-                const response = await fetch('https://script.google.com/macros/s/AKfycbzliNkHyBvBcQBnSRuyQK-P7vLPrTqxO0LuIRVtStxceNdzClVQUTfeE9r9vJ7rglE/exec', {
-                    method: 'POST',
-                    mode: 'cors',
-                    redirect: 'follow',
-                    body: JSON.stringify(data),
-                    headers: {
-                        'Content-Type': 'application/json'
+            // Use google.script.run to communicate with Google Apps Script
+            google.script.run
+                .withSuccessHandler(function(response) {
+                    if (response && response.documentUrl) {
+                        alert(`Form submitted successfully!\nYou can view it at: ${response.documentUrl}`);
+                        window.open(response.documentUrl, '_blank');
+                        event.target.reset();
+                        const quantityInput = document.getElementById("quantity");
+                        if (quantityInput) {
+                            quantityInput.value = "";
+                            generateInputs();
+                        }
+                    } else {
+                        alert('Form submitted but no document URL received.');
                     }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    alert(`Form submitted successfully! Document created.\nYou can view it at: ${result.documentUrl}`);
-                    window.open(result.documentUrl, '_blank'); // Open the document in a new tab
-                    event.target.reset(); // Reset form
-                    const quantityInput = document.getElementById("quantity");
-                    if (quantityInput) {
-                        quantityInput.value = ""; // Clear quantity
-                        generateInputs(); // Clear generated inputs
-                    }
-                } else {
-                    alert(`Error: ${result.error}`);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert(`Error submitting form: ${error.message}`);
-            } finally {
-                // Restore form state
-                submitButton.textContent = originalButtonText;
-                submitButton.disabled = false;
-                event.target.classList.remove('loading');
-            }
+                    submitButton.textContent = originalButtonText;
+                    submitButton.disabled = false;
+                })
+                .withFailureHandler(function(error) {
+                    console.error('Error:', error);
+                    alert(`Error submitting form: ${error.message || error}`);
+                    submitButton.textContent = originalButtonText;
+                    submitButton.disabled = false;
+                })
+                .processForm(data);
         });
     </script>
 </body>
