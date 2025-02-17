@@ -12,62 +12,7 @@
             background-color: #f4f4f4;
             color: #333;
         }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .btn {
-            background: #5cb85c;
-            color: #fff;
-            border: none;
-            padding: 10px 15px;
-            cursor: pointer;
-            border-radius: 4px;
-            width: 100%;
-            text-align: center;
-            font-size: 16px;
-        }
-        .btn:hover {
-            background: #4cae4c;
-        }
-        .logo {
-            height: 100px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        #input-container {
-            margin-left: 20px;
-            padding-left: 10px;
-            border-left: 2px solid #ccc;
-        }
-        .item-type-container, .description-container {
-            margin-left: 20px;
-        }
+        /* ... (rest of your CSS styles) */
     </style>
 </head>
 <body>
@@ -132,11 +77,10 @@
     </div>
 
     <script>
-        // Quantity input handling
         function generateInputs() {
             const quantity = document.getElementById("quantity").value;
             const container = document.getElementById("input-container");
-            container.innerHTML = ""; // Clear previous inputs
+            container.innerHTML = "";
 
             for (let i = 1; i <= quantity; i++) {
                 const div = document.createElement("div");
@@ -186,15 +130,18 @@
                 descContainer.appendChild(descLabel);
                 descContainer.appendChild(descInput);
 
-                // Append elements to container
                 div.appendChild(itemTypeContainer);
                 div.appendChild(descContainer);
                 container.appendChild(div);
             }
         }
 
+<<<<<<< HEAD
         // Form submission handling
         document.getElementById("dispatch-form").addEventListener("submit", async function (event) {
+=======
+        $("#dispatch-form").submit(function (event) {
+>>>>>>> e4bcf17ed38f9e4b5bb8ef7cf3b76fe765339244
             event.preventDefault();
             
             // Get form data
@@ -203,6 +150,7 @@
             formData.forEach((value, key) => {
                 data[key] = value;
             });
+<<<<<<< HEAD
             
             try {
                 // Replace YOUR_WEBAPP_URL with your actual Google Apps Script web app URL
@@ -222,6 +170,27 @@
                     // window.open(result.documentUrl, '_blank');
                 } else {
                     alert(`Error: ${result.error}`);
+=======
+
+            $.ajax({
+                url: "https://script.google.com/macros/s/AKfycbwJpiMy2dNLrhAx78daftyLKCSBOb3Qyt4EgTnBDr4bAjkaXqWyb2t64o4MIHqToBc/exec", // **YOUR APPS SCRIPT URL**
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (response && response.success) {
+                        alert("Form submitted successfully! Document created. URL: " + response.message);
+                        $("#dispatch-form")[0].reset();
+                        $("#input-container").empty();
+                    } else {
+                        alert("Error: " + (response && response.error ? response.error : "An unknown error occurred."));
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("AJAX Error:", status, error, xhr);
+                    alert("AJAX Error: " + status + " - " + error + "\nDetails: " + xhr.responseText);
+>>>>>>> e4bcf17ed38f9e4b5bb8ef7cf3b76fe765339244
                 }
             } catch (error) {
                 alert(`Error submitting form: ${error.message}`);
